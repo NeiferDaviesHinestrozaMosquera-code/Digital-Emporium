@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///home/user/studio/src/app/layout.tsx"],"sourcesContent":["\n// This file is intentionally left almost empty.\n// The main RootLayout is now in src/app/[lang]/layout.tsx\n// Next.js requires a root layout at src/app/layout.tsx for the App Router,\n// even if it just passes children through.\n// Our middleware will handle redirecting to a localized path.\n\nimport type { ReactNode } from 'react';\n\nexport default function RootLayout({ children }: { children: ReactNode }) {\n  return <>{children}</>;\n}\n"],"names":[],"mappings":"AACA,gDAAgD;AAChD,0DAA0D;AAC1D,2EAA2E;AAC3E,2CAA2C;AAC3C,8DAA8D;;;;;;AAI/C,SAAS,WAAW,EAAE,QAAQ,EAA2B;IACtE,qBAAO;kBAAG;;AACZ","debugId":null}},
+    {"offset": {"line": 27, "column": 0}, "map": {"version":3,"sources":["file:///home/user/studio/node_modules/next/src/server/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.ts"],"sourcesContent":["module.exports = require('../../module.compiled').vendored[\n  'react-rsc'\n].ReactJsxDevRuntime\n"],"names":["module","exports","require","vendored","ReactJsxDevRuntime"],"mappings":";AAAAA,OAAOC,OAAO,GAAGC,QAAQ,4HAAyBC,QAAQ,CACxD,YACD,CAACC,kBAAkB","ignoreList":[0],"debugId":null}}]
+}

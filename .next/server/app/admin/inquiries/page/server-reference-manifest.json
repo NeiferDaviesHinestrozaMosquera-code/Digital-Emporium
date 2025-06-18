@@ -1,0 +1,126 @@
+{
+  "node": {
+    "400aefb97b4a84cbbd0cb3795c2b1141d49a12b774": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "rsc"
+      }
+    },
+    "400117b554c480fce96e6000d481229cb0f1c7b513": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "action-browser"
+      }
+    },
+    "402b520fbcb5d146a9b567025ffc925e576513372c": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "action-browser"
+      }
+    },
+    "403b443cd8998003b1c4e3751bb097e5e492a61189": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "action-browser"
+      }
+    },
+    "408b6b1379786bcc4fb2d531fe8475b5ef5884231e": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "action-browser"
+      }
+    },
+    "40c1da80fb6212331f5f350073aa450c9030187f70": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "action-browser"
+      }
+    },
+    "40d503658370d86144c7754dce038117efa90f1cc2": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "action-browser"
+      }
+    },
+    "6003c19f5612a533cffa4b8de06759b52e57ce1f6f": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "action-browser"
+      }
+    },
+    "609419491cb79008e54fd8e94a980657df3244a7a7": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "action-browser"
+      }
+    },
+    "60f91420ee84a64759d0352be22720cde785c3bee0": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "action-browser"
+      }
+    },
+    "407e89de8a799c056830053cd0496289a2597c2390": {
+      "workers": {
+        "app/admin/inquiries/page": {
+          "moduleId": "[project]/.next-internal/server/app/admin/inquiries/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/admin/inquiries/page.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/components/admin/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/ai/flows/generate-quote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/inquiries/page": "rsc"
+      }
+    }
+  },
+  "edge": {}
+}
