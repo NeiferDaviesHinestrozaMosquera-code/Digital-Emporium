@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/i18n-config';
-import { useParams } from 'next/navigation';
+
 
 // The actual form component that uses the hook
 function LoginForm({ lang }: { lang: Locale }) {
@@ -134,13 +134,15 @@ function LoginForm({ lang }: { lang: Locale }) {
 
 // The page component that wraps the form in a Suspense boundary
 export default function LoginPage() {
-  const params = useParams<{ lang: Locale }>(); // Obtener parámetros de la ruta
+  // Usa useParams de la importación existente
+  const params = useParams<{ lang: Locale }>();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  if (!params || !params.lang) {
+
+  if (!isMounted || !params?.lang) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -156,5 +158,5 @@ export default function LoginPage() {
     }>
       <LoginForm lang={params.lang} />
     </Suspense>
-  )
+  );
 }
