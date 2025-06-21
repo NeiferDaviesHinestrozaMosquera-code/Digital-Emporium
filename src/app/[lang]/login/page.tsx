@@ -3,7 +3,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, type User } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/i18n-config';
 
 // The actual form component that uses the hook
-function LoginForm() {
+function LoginForm({ lang }: { lang: Locale }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -23,8 +23,6 @@ function LoginForm() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const params = useParams();
-  const lang = params.lang as Locale || 'en';
-  
   const getRedirectUrl = () => {
     const callbackUrl = searchParams.get('redirect');
     if (callbackUrl) {
@@ -133,14 +131,14 @@ function LoginForm() {
 }
 
 // The page component that wraps the form in a Suspense boundary
-export default function LoginPage() {
+export default function LoginPage({ params }: { params: { lang: Locale } }) {
   return (
     <Suspense fallback={
       <div className="flex h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     }>
-      <LoginForm />
+      <LoginForm lang={params.lang} />
     </Suspense>
   )
 }
