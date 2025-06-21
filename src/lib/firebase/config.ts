@@ -27,9 +27,13 @@ if (!getApps().length) {
   app = getApps()[0];
 }
 
-// let analytics: Analytics | undefined; // Can be initialized on client-side if needed
-const auth: Auth = getAuth(app);
-const db: Database = getDatabase(app); 
+// Initialize Auth only on the client-side
+let auth: Auth | undefined;
+if (typeof window !== 'undefined') {
+  auth = getAuth(app);
+}
+
+const db: Database = getDatabase(app);
 
 // Example for client-side Analytics initialization (if you uncomment the import)
 // if (typeof window !== 'undefined') {
