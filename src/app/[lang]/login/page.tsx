@@ -130,13 +130,10 @@ function LoginForm({ lang }: { lang: Locale }) {
   );
 }
 
-export async function generateStaticParams() {
-  return i18n.locales.map((locale) => ({ lang: locale }));
-}
 
 // The page component that wraps the form in a Suspense boundary
 export default function LoginPage({ params }: { params: { lang: Locale } }) {
-   if (!params?.lang) {
+  if (!params || !params.lang) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
