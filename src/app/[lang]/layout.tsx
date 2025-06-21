@@ -1,4 +1,3 @@
-
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import '../globals.css'; // Adjusted path for globals.css
@@ -42,14 +41,21 @@ export const viewport: Viewport = {
   ],
 }
 
+type RootLayoutProps = {
+  children: React.ReactNode;
+  params: { lang: Locale };
+};
+
 export default function RootLayout({
   children,
   params,
-}: Readonly<{
-  children: React.ReactNode;
-  params: { lang: Locale };
-}>) {
+}: RootLayoutProps) {
+  // Fetch the dictionary for the current locale
+  // Note: getDictionary is already async, so this works well with async components
+  // However, we are not explicitly passing it down as a prop here,
+  // assuming pages/components use getDictionary directly with params.lang
   return (
+
     <html lang={params.lang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
         <ThemeProvider
