@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
@@ -14,7 +14,8 @@ import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/i18n-config';
 
-export default function LoginPage() {
+// The actual form component that uses the hook
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,11 +25,9 @@ export default function LoginPage() {
   const params = useParams();
   const lang = params.lang as Locale || 'en';
   
-  // Ensure redirectUrl is locale-prefixed or defaults to a locale-prefixed admin page
   const getRedirectUrl = () => {
     const callbackUrl = searchParams.get('redirect');
     if (callbackUrl) {
-        // If callbackUrl already has a locale, use it. Otherwise, prefix with current lang.
         const hasLocale = /^\/(en|es|fr)/.test(callbackUrl);
         return hasLocale ? callbackUrl : `/${lang}${callbackUrl}`;
     }
@@ -65,7 +64,6 @@ export default function LoginPage() {
   };
   
   useEffect(() => {
-    // Set page title (client-side for i18n simplicity here)
     document.title = `Admin Login - Digital Emporium`;
   }, []);
 
@@ -132,4 +130,17 @@ export default function LoginPage() {
       </p>
     </div>
   );
+}
+
+// The page component that wraps the form in a Suspense boundary
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
+  )
 }

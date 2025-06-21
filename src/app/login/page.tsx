@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
@@ -13,7 +13,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 
-export default function LoginPage() {
+// The actual form component that uses the hook
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -112,4 +113,17 @@ export default function LoginPage() {
       </p>
     </div>
   );
+}
+
+// The page component that wraps the form in a Suspense boundary
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
+  )
 }
