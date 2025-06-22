@@ -1,6 +1,3 @@
-Aquí tienes el código completo para `src/app/[lang]/contact/page.tsx` con las correcciones aplicadas:
-
-```typescript
 import type { Metadata } from 'next';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
@@ -100,4 +97,3 @@ export default async function ContactPage({ params }: ContactPageProps) {
     </div>
   );
 }
-```
