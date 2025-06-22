@@ -9,32 +9,68 @@ import { getSiteContentAction } from '@/components/admin/actions';
 import type { ContactPageContent } from '@/lib/placeholder-data';
 import { defaultSiteContent } from '@/lib/placeholder-data';
 
+// Props interface for the page component
 interface ContactPageProps {
   params: { lang: Locale };
 }
 
+// Updated generateMetadata function with error handling
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
-  const { lang } = params;
+  const { lang } = params || {}; // Check if params is defined
+
+  // Handle case where lang is not provided
+  if (!lang) {
+    console.warn("Lang parameter not found in generateMetadata, using default language.");
+    return {
+      title: "Contact Us - Digital Emporium",
+      description: "We're here to help and answer any question you might have. We look forward to hearing from you!",
+    };
+  }
+
+  console.log(`[generateMetadata] Attempting to get site content for lang: ${lang}`);
   const siteContent = await getSiteContentAction();
-  
+  console.log(`[generateMetadata] siteContent received:`, JSON.stringify(siteContent, null, 2));
+
+  // Ensure contactPage exists, otherwise use default
   const contactPage = siteContent?.contactPage || defaultSiteContent.contactPage;
-  
+
+  // Check if the specific lang property exists in pageTitle and subHeading
   const pageTitle = contactPage.pageTitle?.[lang] || "Contact Us";
   const description = contactPage.subHeading?.[lang] || "Get in touch with us.";
-  
+
+  console.log(`[generateMetadata] Final title: ${pageTitle}, Final description: ${description}`);
+
   return {
     title: pageTitle,
     description: description,
   };
 }
 
+// Updated ContactPage component with error handling
 export default async function ContactPage({ params }: ContactPageProps) {
-  const { lang } = params;
-  
-  // Solución: Asegurar que dictionary siempre es un objeto
-  const dictionary = await getDictionary(lang) || {};
-  
+  const { lang } = params || {}; // Check if params is defined
+
+  // Handle case where lang is not provided
+  if (!lang) {
+    console.warn("Lang parameter not found in ContactPage, using default language.");
+    return (
+      <div className="container mx-auto px-4 py-12 md:py-16">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 tracking-tight">
+          Contact Us
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          An error occurred while loading the contact page. Please try again later.
+        </p>
+      </div>
+    );
+  }
+
+  console.log(`[ContactPage] Rendering for lang: ${lang}`);
+  const dictionary = await getDictionary(lang);
   const siteContent = await getSiteContentAction();
+  console.log(`[ContactPage] siteContent received:`, JSON.stringify(siteContent, null, 2));
+
+  // Ensure contact exists, otherwise use default
   const contact = siteContent?.contactPage || defaultSiteContent.contactPage;
 
   const contactMethods = [
@@ -98,15 +134,10 @@ export default async function ContactPage({ params }: ContactPageProps) {
         <p className="text-muted-foreground max-w-xl mx-auto mb-8">
           {contact.ctaDescription?.[lang] || "Reach out to discuss your project and get a personalized quote."}
         </p>
-        <Button 
-          asChild 
-          size="lg" 
-          className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-3 text-lg"
-        >
+        <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-3 text-lg">
           <Link href={`/${lang}/quote-request`}>
             <Send className="mr-2 h-5 w-5" />
-            {/* Solución: Manejo seguro de la propiedad del diccionario */}
-            {dictionary.requestAQuoteNow ?? "Request a Quote Now"}
+            {dictionary.requestAQuoteNow as string}
           </Link>
         </Button>
       </section>
