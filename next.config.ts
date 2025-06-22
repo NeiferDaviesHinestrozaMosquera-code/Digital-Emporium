@@ -1,4 +1,4 @@
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  // Configuración para manejar las rutas dinámicas de idioma
+  trailingSlash: false,
+  // Configuración experimental para mejorar el manejo de rutas dinámicas
+  experimental: {
+    // Esto puede ayudar con el prerendering de rutas dinámicas
+    optimizePackageImports: ['lucide-react'],
   },
   images: {
     remotePatterns: [
@@ -24,41 +31,41 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'firebasestorage.googleapis.com', // Added for Firebase Storage
+        hostname: 'firebasestorage.googleapis.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'cdn.forbes.com.mx', // Added for Forbes images
+        hostname: 'cdn.forbes.com.mx',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'kvmpay.com', // Added for kvmpay images
+        hostname: 'kvmpay.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'gloriumtech.com', // Added for gloriumtech images
+        hostname: 'gloriumtech.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'hoffmannmurtaugh.com', // Added for hoffmannmurtaugh images
+        hostname: 'hoffmannmurtaugh.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'www.infintechdesigns.com', // Added for infintechdesigns images
+        hostname: 'www.infintechdesigns.com',
         port: '',
         pathname: '/**',
       },
-      { // Added for Supabase storage
+      {
         protocol: 'https',
         hostname: 'hoogjocezxaiysibtanl.supabase.co',
         port: '',
