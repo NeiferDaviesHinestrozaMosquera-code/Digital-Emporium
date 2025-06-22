@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithEmailAndPassword, type User } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,6 @@ import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/i18n-config';
 
-
 // The actual form component that uses the hook
 function LoginForm({ lang }: { lang: Locale }) {
   const [email, setEmail] = useState('');
@@ -23,35 +21,43 @@ function LoginForm({ lang }: { lang: Locale }) {
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  const params = useParams();
+
   const getRedirectUrl = () => {
     const callbackUrl = searchParams.get('redirect');
     if (callbackUrl) {
-        const hasLocale = /^\/(en|es|fr)/.test(callbackUrl);
-        return hasLocale ? callbackUrl : `/${lang}${callbackUrl}`;
+      const hasLocale = /^\/(en|es|fr)/.test(callbackUrl);
+      return hasLocale ? callbackUrl : `/${lang}${callbackUrl}`;
     }
     return `/${lang}/admin`;
   }
+
   const redirectUrl = getRedirectUrl();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      toast({ title: 'Login Successful', description: `Redirecting...` });
+      toast({
+        title: 'Login Successful',
+        description: `Redirecting...`
+      });
       router.push(redirectUrl);
     } catch (error: any) {
       console.error("Login attempt failed. Firebase error:", error);
+      
       let description = 'Please check your credentials and try again.';
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+      if (error.code === 'auth/invalid-credential' || 
+          error.code === 'auth/user-not-found' || 
+          error.code === 'auth/wrong-password') {
         description = 'Invalid email or password. Please verify your credentials.';
       } else if (error.code === 'auth/invalid-api-key') {
         description = 'Firebase API Key is invalid. Please check configuration.';
       } else if (error.message) {
         description = error.message;
       }
-      
+
       toast({
         title: 'Login Failed',
         description: description,
@@ -61,7 +67,7 @@ function LoginForm({ lang }: { lang: Locale }) {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     document.title = `Admin Login - Digital Emporium`;
   }, []);
@@ -74,6 +80,7 @@ function LoginForm({ lang }: { lang: Locale }) {
           <span className="font-semibold text-xl">Digital Emporium</span>
         </Link>
       </div>
+
       <Card className="w-full max-w-md shadow-2xl border-t-4 border-primary">
         <CardHeader className="text-center space-y-2">
           <ShieldAlert className="mx-auto h-12 w-12 text-primary" />
@@ -82,6 +89,7 @@ function LoginForm({ lang }: { lang: Locale }) {
             Access the management dashboard. <br/>Please enter your credentials below.
           </CardDescription>
         </CardHeader>
+        
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-6 py-6">
             <div className="space-y-2">
@@ -109,8 +117,13 @@ function LoginForm({ lang }: { lang: Locale }) {
               />
             </div>
           </CardContent>
+          
           <CardFooter className="flex flex-col gap-4 pt-2">
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6 rounded-md font-semibold" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6 rounded-md font-semibold"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : (
@@ -124,25 +137,31 @@ function LoginForm({ lang }: { lang: Locale }) {
           </CardFooter>
         </form>
       </Card>
-       <p className="mt-8 text-sm text-muted-foreground max-w-md text-center">
+
+      <p className="mt-8 text-sm text-muted-foreground max-w-md text-center">
         This area is restricted. Only authorized personnel should attempt to log in. All activities may be monitored.
       </p>
     </div>
   );
 }
 
+// The page component that receives params as props from Next.js
+interface LoginPageProps {
+  params: {
+    lang: Locale;
+  };
+}
 
-// The page component that wraps the form in a Suspense boundary
-export default function LoginPage() {
-  // Usa useParams de la importación existente
-  const params = useParams<{ lang: Locale }>();
+export default function LoginPage({ params }: LoginPageProps) {
+  // No necesitas hooks del lado del cliente aquí durante el prerendering
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted || !params?.lang) {
+  // Durante el prerendering, params.lang debería estar disponible
+  if (!isMounted) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
