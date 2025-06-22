@@ -1,32 +1,37 @@
 import type { Metadata } from 'next';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
-import type { Locale } from '@/lib/i18n/i18n-config';
+import type { Locale } => '@/lib/i18n/i18n-config';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getSiteContentAction } from '@/components/admin/actions';
 import type { ContactPageContent } from '@/lib/placeholder-data';
+import { defaultSiteContent } from '@/lib/placeholder-data'; // Import defaultSiteContent
 
 // Props interface for the page component
 interface ContactPageProps {
-  params: { lang: Locale }; // Simplified: params is directly an object with lang
+  params: { lang: Locale };
 }
 
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
-  const { lang } = params; // Access lang directly
+  const { lang } = params;
   const siteContent = await getSiteContentAction();
+  // Ensure contactPage exists, otherwise use default
+  const contactPage = siteContent.contactPage || defaultSiteContent.contactPage;
+
   return {
-    title: siteContent.contactPage.pageTitle[lang] || "Contact Us",
-    description: siteContent.contactPage.subHeading[lang] || "Get in touch with us.",
+    title: contactPage.pageTitle[lang] || "Contact Us",
+    description: contactPage.subHeading[lang] || "Get in touch with us.",
   };
 }
 
 export default async function ContactPage({ params }: ContactPageProps) {
-  const { lang } = params; // Access lang directly
-  const dictionary = await getDictionary(lang); // For static UI elements like button text
+  const { lang } = params;
+  const dictionary = await getDictionary(lang);
   const siteContent = await getSiteContentAction();
-  const contact = siteContent.contactPage;
+  // Ensure contact exists, otherwise use default
+  const contact = siteContent.contactPage || defaultSiteContent.contactPage;
 
   const contactMethods = [
     {
