@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
@@ -9,15 +8,29 @@ import Link from 'next/link';
 import { getSiteContentAction } from '@/components/admin/actions';
 import type { ContactPageContent } from '@/lib/placeholder-data';
 
-export async function generateMetadata({ params: { lang } }: { params: { lang: Locale } }): Promise<Metadata> {
+// Props interface for the page component
+interface ContactPageProps {
+  params: Promise<{ lang: Locale }> | { lang: Locale };
+}
+
+export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
+  // Resolve params if it's a Promise
+  const resolvedParams = await Promise.resolve(params);
+  const { lang } = resolvedParams;
+  
   const siteContent = await getSiteContentAction();
+  
   return {
     title: siteContent.contactPage.pageTitle[lang] || "Contact Us",
     description: siteContent.contactPage.subHeading[lang] || "Get in touch with us.",
   };
 }
 
-export default async function ContactPage({ params: { lang } }: { params: { lang: Locale } }) {
+export default async function ContactPage({ params }: ContactPageProps) {
+  // Resolve params if it's a Promise
+  const resolvedParams = await Promise.resolve(params);
+  const { lang } = resolvedParams;
+  
   const dictionary = await getDictionary(lang); // For static UI elements like button text
   const siteContent = await getSiteContentAction();
   const contact = siteContent.contactPage;
@@ -93,5 +106,3 @@ export default async function ContactPage({ params: { lang } }: { params: { lang
     </div>
   );
 }
-
-    
