@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithEmailAndPassword, type User } from 'firebase/auth';
@@ -28,35 +28,30 @@ function LoginForm({ lang }: { lang: Locale }) {
       return hasLocale ? callbackUrl : `/${lang}${callbackUrl}`;
     }
     return `/${lang}/admin`;
-  }
+  };
 
   const redirectUrl = getRedirectUrl();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: 'Login Successful',
-        description: `Redirecting...`
+        description: `Redirecting...`,
       });
       router.push(redirectUrl);
     } catch (error: any) {
       console.error("Login attempt failed. Firebase error:", error);
       let description = 'Please check your credentials and try again.';
-      
-      if (error.code === 'auth/invalid-credential' || 
-          error.code === 'auth/user-not-found' || 
-          error.code === 'auth/wrong-password') {
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         description = 'Invalid email or password. Please verify your credentials.';
       } else if (error.code === 'auth/invalid-api-key') {
         description = 'Firebase API Key is invalid. Please check configuration.';
       } else if (error.message) {
         description = error.message;
       }
-
       toast({
         title: 'Login Failed',
         description: description,
@@ -79,21 +74,22 @@ function LoginForm({ lang }: { lang: Locale }) {
           <span className="font-semibold text-xl">Digital Emporium</span>
         </Link>
       </div>
-
       <Card className="w-full max-w-md shadow-2xl border-t-4 border-primary">
         <CardHeader className="text-center space-y-2">
           <ShieldAlert className="mx-auto h-12 w-12 text-primary" />
           <CardTitle className="text-3xl font-bold text-primary">Admin Portal</CardTitle>
           <CardDescription className="text-muted-foreground">
             Access the management dashboard.
-            <br/>Please enter your credentials below.
+            <br />
+            Please enter your credentials below.
           </CardDescription>
         </CardHeader>
-
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-6 py-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-base font-medium">Email Address</Label>
+              <Label htmlFor="email" className="text-base font-medium">
+                Email Address
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -105,7 +101,9 @@ function LoginForm({ lang }: { lang: Locale }) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-base font-medium">Password</Label>
+              <Label htmlFor="password" className="text-base font-medium">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -117,7 +115,6 @@ function LoginForm({ lang }: { lang: Locale }) {
               />
             </div>
           </CardContent>
-
           <CardFooter className="flex flex-col gap-4 pt-2">
             <Button
               type="submit"
@@ -137,10 +134,8 @@ function LoginForm({ lang }: { lang: Locale }) {
           </CardFooter>
         </form>
       </Card>
-
       <p className="mt-8 text-sm text-muted-foreground max-w-md text-center">
-        This area is restricted. Only authorized personnel should attempt to log in.
-        All activities may be monitored.
+        This area is restricted. Only authorized personnel should attempt to log in. All activities may be monitored.
       </p>
     </div>
   );
@@ -161,9 +156,9 @@ interface LoginPageProps {
 }
 
 export default function LoginPage({ params }: LoginPageProps) {
-  // Verificar que params y params.lang existan
+  // Check if params and params.lang exist
   if (!params || !params.lang) {
-    // Fallback durante el build o si hay problemas con los params
+    // Fallback during build or if there are issues with params
     return <LoadingSpinner />;
   }
 
@@ -174,14 +169,5 @@ export default function LoginPage({ params }: LoginPageProps) {
   );
 }
 
-// Agregar esta función para generar los parámetros estáticos
-export async function generateStaticParams() {
-  return [
-    { lang: 'en' },
-    { lang: 'es' },
-    { lang: 'fr' },
-  ];
-}
-
-// Forzar renderizado dinámico si es necesario
+// For dynamic rendering if needed
 export const dynamic = 'force-dynamic';
