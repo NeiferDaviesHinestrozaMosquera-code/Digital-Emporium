@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithEmailAndPassword, type User } from 'firebase/auth';
@@ -46,8 +45,8 @@ function LoginForm({ lang }: { lang: Locale }) {
       router.push(redirectUrl);
     } catch (error: any) {
       console.error("Login attempt failed. Firebase error:", error);
-      
       let description = 'Please check your credentials and try again.';
+      
       if (error.code === 'auth/invalid-credential' || 
           error.code === 'auth/user-not-found' || 
           error.code === 'auth/wrong-password') {
@@ -86,10 +85,11 @@ function LoginForm({ lang }: { lang: Locale }) {
           <ShieldAlert className="mx-auto h-12 w-12 text-primary" />
           <CardTitle className="text-3xl font-bold text-primary">Admin Portal</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Access the management dashboard. <br/>Please enter your credentials below.
+            Access the management dashboard.
+            <br/>Please enter your credentials below.
           </CardDescription>
         </CardHeader>
-        
+
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-6 py-6">
             <div className="space-y-2">
@@ -117,7 +117,7 @@ function LoginForm({ lang }: { lang: Locale }) {
               />
             </div>
           </CardContent>
-          
+
           <CardFooter className="flex flex-col gap-4 pt-2">
             <Button
               type="submit"
@@ -139,43 +139,49 @@ function LoginForm({ lang }: { lang: Locale }) {
       </Card>
 
       <p className="mt-8 text-sm text-muted-foreground max-w-md text-center">
-        This area is restricted. Only authorized personnel should attempt to log in. All activities may be monitored.
+        This area is restricted. Only authorized personnel should attempt to log in.
+        All activities may be monitored.
       </p>
+    </div>
+  );
+}
+
+// Loading component
+function LoadingSpinner() {
+  return (
+    <div className="flex h-screen items-center justify-center bg-background">
+      <Loader2 className="h-12 w-12 animate-spin text-primary" />
     </div>
   );
 }
 
 // The page component that receives params as props from Next.js
 interface LoginPageProps {
-  params: {
-    lang: Locale;
-  };
+  params: { lang: Locale };
 }
 
 export default function LoginPage({ params }: LoginPageProps) {
-  // No necesitas hooks del lado del cliente aquí durante el prerendering
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Durante el prerendering, params.lang debería estar disponible
-  if (!isMounted) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
+  // Verificar que params y params.lang existan
+  if (!params || !params.lang) {
+    // Fallback durante el build o si hay problemas con los params
+    return <LoadingSpinner />;
   }
 
   return (
-    <Suspense fallback={
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    }>
+    <Suspense fallback={<LoadingSpinner />}>
       <LoginForm lang={params.lang} />
     </Suspense>
   );
 }
+
+// Agregar esta función para generar los parámetros estáticos
+export async function generateStaticParams() {
+  return [
+    { lang: 'en' },
+    { lang: 'es' },
+    { lang: 'fr' },
+  ];
+}
+
+// Forzar renderizado dinámico si es necesario
+export const dynamic = 'force-dynamic';
