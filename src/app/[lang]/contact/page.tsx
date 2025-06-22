@@ -1,37 +1,37 @@
 import type { Metadata } from 'next';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
-import type { Locale } from '@/lib/i18n/i18n-config'; // <-- CORREGIDO AQUÍ
+import type { Locale } from '@/lib/i18n/i18n-config';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getSiteContentAction } from '@/components/admin/actions';
 import type { ContactPageContent } from '@/lib/placeholder-data';
-import { defaultSiteContent } from '@/lib/placeholder-data'; // Import defaultSiteContent
 
 // Props interface for the page component
 interface ContactPageProps {
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }>;
 }
 
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
-  const { lang } = params;
+  // In Next.js 15, params is always a Promise during static generation
+  const { lang } = await params;
+  
   const siteContent = await getSiteContentAction();
-  // Ensure contactPage exists, otherwise use default
-  const contactPage = siteContent.contactPage || defaultSiteContent.contactPage;
-
+  
   return {
-    title: contactPage.pageTitle[lang] || "Contact Us",
-    description: contactPage.subHeading[lang] || "Get in touch with us.",
+    title: siteContent.contactPage.pageTitle[lang] || "Contact Us",
+    description: siteContent.contactPage.subHeading[lang] || "Get in touch with us.",
   };
 }
 
 export default async function ContactPage({ params }: ContactPageProps) {
-  const { lang } = params;
-  const dictionary = await getDictionary(lang);
+  // In Next.js 15, params is always a Promise during static generation
+  const { lang } = await params;
+  
+  const dictionary = await getDictionary(lang); // For static UI elements like button text
   const siteContent = await getSiteContentAction();
-  // Ensure contact exists, otherwise use default
-  const contact = siteContent.contactPage || defaultSiteContent.contactPage;
+  const contact = siteContent.contactPage;
 
   const contactMethods = [
     {
@@ -64,6 +64,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
           {contact.subHeading[lang]}
         </p>
       </header>
+
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 md:mb-16">
         {contactMethods.map((method) => (
           <Card key={method.title} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -85,6 +86,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
           </Card>
         ))}
       </div>
+
       <section className="text-center py-10 bg-secondary/30 rounded-lg shadow">
         <h2 className="text-2xl md:text-3xl font-semibold text-primary mb-4">
           {contact.ctaHeading[lang]}
