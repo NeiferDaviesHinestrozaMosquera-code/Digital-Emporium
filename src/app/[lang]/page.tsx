@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { Service, Testimonial } from '@/lib/placeholder-data';
@@ -9,10 +8,15 @@ import type { Metadata } from 'next';
 import { db } from "@/lib/firebase/config";
 import { ref, get, child, limitToFirst, query as firebaseQuery } from "firebase/database";
 import { getDictionary } from '@/lib/i18n/get-dictionary';
-import type { Locale } from '@/lib/i18n/i18n-config';
+import { i18n, type Locale } from '@/lib/i18n/i18n-config'; // Importa i18n para acceder a defaultLocale y locales
 
 export async function generateMetadata({ params }: { params: { lang: Locale } }): Promise<Metadata> {
-  const dictionary = await getDictionary(params.lang);
+  // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
+  const safeLang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+    ? params.lang
+    : i18n.defaultLocale;
+
+  const dictionary = await getDictionary(safeLang);
   return {
     title: dictionary.heroTitle as string || 'Digital Emporium - Innovative Digital Solutions',
     description: dictionary.heroSubtitle as string || 'Digital Emporium offers web and app development, AI bots, and custom agent creation to elevate your business.',
@@ -47,9 +51,14 @@ async function getHomePageData(): Promise<{ services: Service[], testimonials: T
 }
 
 
-export default async function HomePage({ params: { lang } }: { params: { lang: Locale } }) {
+export default async function HomePage({ params }: { params: { lang: Locale } }) {
+  // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
+  const safeLang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+    ? params.lang
+    : i18n.defaultLocale;
+
   const { services, testimonials } = await getHomePageData();
-  const dictionary = await getDictionary(lang);
+  const dictionary = await getDictionary(safeLang);
 
   return (
     <div className="flex flex-col">
@@ -68,12 +77,12 @@ export default async function HomePage({ params: { lang } }: { params: { lang: L
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
             <div className="animate-in fade-in slide-in-from-left-12 duration-700 delay-400">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-lg text-lg w-full sm:w-auto">
-                <Link href={`/${lang}/services`}>{dictionary.exploreServices as string}</Link>
+                <Link href={`/${safeLang}/services`}>{dictionary.exploreServices as string}</Link>
               </Button>
             </div>
             <div className="animate-in fade-in slide-in-from-right-12 duration-700 delay-500">
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/5 hover:text-primary px-8 py-3 rounded-lg text-lg w-full sm:w-auto">
-                <Link href={`/${lang}/quote-request`}>{dictionary.getAQuote as string}</Link>
+                <Link href={`/${safeLang}/quote-request`}>{dictionary.getAQuote as string}</Link>
               </Button>
             </div>
           </div>
@@ -91,7 +100,7 @@ export default async function HomePage({ params: { lang } }: { params: { lang: L
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service, index) => ( 
                 <div key={service.id} className={`animate-in fade-in slide-in-from-bottom-10 duration-500`} style={{ animationDelay: `${index * 150 + 200}ms` }}>
-                  <ServiceCard service={service} lang={lang} />
+                  <ServiceCard service={service} lang={safeLang} />
                 </div>
               ))}
             </div>
@@ -99,7 +108,7 @@ export default async function HomePage({ params: { lang } }: { params: { lang: L
           }
           <div className="text-center mt-12 animate-in fade-in zoom-in delay-500 duration-500">
             <Button asChild variant="link" className="text-accent hover:text-accent/80 text-lg">
-              <Link href={`/${lang}/services`}>
+              <Link href={`/${safeLang}/services`}>
                 {dictionary.viewAllServices as string} <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -135,7 +144,7 @@ export default async function HomePage({ params: { lang } }: { params: { lang: L
             {dictionary.readyToStartDescription as string}
           </p>
           <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-4 rounded-lg text-xl animate-in fade-in zoom-in delay-300 duration-500">
-            <Link href={`/${lang}/quote-request`}>{dictionary.requestAQuoteNow as string}</Link>
+            <Link href={`/${safeLang}/quote-request`}>{dictionary.requestAQuoteNow as string}</Link>
           </Button>
         </div>
       </section>
