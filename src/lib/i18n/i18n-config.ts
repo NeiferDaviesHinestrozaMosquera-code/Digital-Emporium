@@ -3,7 +3,8 @@ export const i18n = {
   locales: ['en', 'es', 'fr'],
 } as const;
 
-// Añadir esta función de ayuda
+export type Locale = (typeof i18n)['locales'][number];
+
 export function getLocaleFromParams(params: unknown): Locale {
   if (params && typeof params === 'object' && 'lang' in params) {
     const lang = (params as { lang: string }).lang;
