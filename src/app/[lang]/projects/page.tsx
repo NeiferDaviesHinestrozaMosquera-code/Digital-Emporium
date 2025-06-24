@@ -5,15 +5,28 @@ import type { Project } from '@/lib/placeholder-data';
 import { db } from "@/lib/firebase/config";
 import { ref, get, child } from "firebase/database";
 import { getDictionary } from '@/lib/i18n/get-dictionary';
-import { getLocaleFromParams } from '@/lib/i18n/i18n-config';
+import { i18n } from '@/lib/i18n/i18n-config';
 
+// Función para obtener el idioma de forma segura
+function getSafeLang(langParam: any): 'en' | 'es' | 'fr' {
+  return i18n.locales.includes(langParam) 
+    ? langParam as 'en' | 'es' | 'fr'
+    : i18n.defaultLocale;
+}
+
+// Generar rutas estáticas
+export async function generateStaticParams() {
+  return i18n.locales.map(locale => ({ lang: locale }));
+}
+
+// Generar metadatos
 export async function generateMetadata({
   params
 }: {
-  params?: { lang?: string }
-} = {}): Promise<Metadata> {
-  const locale = getLocaleFromParams(params);
-  const dictionary = await getDictionary(locale);
+  params: { lang: string }
+}): Promise<Metadata> {
+  const lang = getSafeLang(params?.lang);
+  const dictionary = await getDictionary(lang);
   
   return {
     title: dictionary.projectsPageTitle as string || "Our Projects",
@@ -21,6 +34,7 @@ export async function generateMetadata({
   };
 }
 
+// Obtener proyectos de Firebase
 async function getProjectsFromDB(): Promise<Project[]> {
   try {
     const dbRef = ref(db);
@@ -28,28 +42,33 @@ async function getProjectsFromDB(): Promise<Project[]> {
     
     if (snapshot.exists()) {
       const projectsObject = snapshot.val();
-      const projectsArray = Object.keys(projectsObject)
-        .map(key => ({ id: key, ...projectsObject[key] }))
-        .sort((a, b) => a.title.localeCompare(b.title));
-      
-      return projectsArray as Project[];
+      return Object.keys(projectsObject)
+        .map(key => ({ 
+          id: key, 
+          ...projectsObject[key],
+          // Asegurar valores para internacionalización
+          title: projectsObject[key].title || { en: "Project Title" },
+          description: projectsObject[key].description || { en: "Project description" },
+          shortDescription: projectsObject[key].shortDescription || { en: "Short project description" }
+        }));
     } else {
       return [];
     }
   } catch (error) {
-    console.error("Error fetching projects from Firebase DB for public page:", error);
+    console.error("Error fetching projects from Firebase:", error);
     return [];
   }
 }
 
+// Componente de página
 export default async function ProjectsPage({
   params
 }: {
-  params?: { lang?: string }
-} = {}) {
-  const locale = getLocaleFromParams(params);
+  params: { lang: string }
+}) {
+  const lang = getSafeLang(params?.lang);
   const projects = await getProjectsFromDB();
-  const dictionary = await getDictionary(locale);
+  const dictionary = await getDictionary(lang);
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
@@ -60,7 +79,7 @@ export default async function ProjectsPage({
         </h1>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           {dictionary.projectsPageSubHeading || 
-            "Discover the innovative solutions and impactful projects we've delivered for our clients. Each project reflects our commitment to quality, creativity, and cutting-edge technology."}
+            "Discover the innovative solutions and impactful projects we've delivered for our clients."}
         </p>
       </div>
 
@@ -72,14 +91,14 @@ export default async function ProjectsPage({
               className={`animate-in fade-in slide-in-from-bottom-10 duration-500`}
               style={{ animationDelay: `${index * 150}ms` }}
             >
-              <ProjectCard project={project} />
+              <ProjectCard project={project} lang={lang} />
             </div>
           ))}
         </div>
       ) : (
         <div className="text-center py-10">
           <p className="text-xl text-muted-foreground">
-            {dictionary.noProjectsMessage || "We are currently updating our project portfolio. Check back soon!"}
+            {dictionary.noProjectsMessage || "We are currently updating our project portfolio."}
           </p>
         </div>
       )}
