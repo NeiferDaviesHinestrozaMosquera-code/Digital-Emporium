@@ -1,29 +1,23 @@
 import type { Metadata } from 'next';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
-import { i18n, type Locale } from '@/lib/i18n/i18n-config';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getSiteContentAction } from '@/components/admin/actions';
 import { defaultSiteContent } from '@/lib/placeholder-data';
+import { getLocaleFromParams } from '@/lib/i18n/i18n-config';
 
-// Helper para obtener el locale de forma segura
-function getSafeLocale(params?: { lang?: Locale }): Locale {
-  if (!params || !params.lang) {
-    return i18n.defaultLocale;
-  }
+export async function generateMetadata({
+  params
+}: {
+  params?: { lang?: string }
+} = {}): Promise<Metadata> {
+  // Manejo directo de params.lang con protección
+  const lang = params?.lang && ['en', 'es', 'fr'].includes(params.lang)
+    ? params.lang as 'en' | 'es' | 'fr'
+    : 'en';
   
-  return i18n.locales.includes(params.lang) 
-    ? params.lang 
-    : i18n.defaultLocale;
-}
-
-// Generar metadatos
-export async function generateMetadata(
-  props: { params?: { lang?: Locale } } = {}
-): Promise<Metadata> {
-  const lang = getSafeLocale(props.params);
   const siteContent = await getSiteContentAction();
   const contact = siteContent?.contactPage || defaultSiteContent.contactPage;
 
@@ -33,11 +27,16 @@ export async function generateMetadata(
   };
 }
 
-// Componente de página
-export default async function ContactPage(
-  props: { params?: { lang?: Locale } } = {}
-) {
-  const lang = getSafeLocale(props.params);
+export default async function ContactPage({
+  params
+}: {
+  params?: { lang?: string }
+} = {}) {
+  // Solución simplificada y robusta
+  const lang = params?.lang && ['en', 'es', 'fr'].includes(params.lang)
+    ? params.lang as 'en' | 'es' | 'fr'
+    : 'en';
+  
   const dictionary = await getDictionary(lang);
   const siteContent = await getSiteContentAction();
   const contact = siteContent?.contactPage || defaultSiteContent.contactPage;
@@ -53,7 +52,7 @@ export default async function ContactPage(
       icon: Phone, 
       title: contact.phoneLabel?.[lang] || "Call Us",
       value: contact.phoneValue || "",
-      href: `tel:${contact.phoneValue?.replace(/\s/g, '') || ''}`
+      href: `tel:${(contact.phoneValue || '').replace(/\s/g, '')}`
     },
     { 
       icon: MapPin, 
