@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
-import type { Locale } from '@/lib/i18n/i18n-config';
+import { i18n, type Locale } from '@/lib/i18n/i18n-config'; // Importa i18n para acceder a defaultLocale y locales
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -14,17 +14,14 @@ interface ContactPageProps {
   params: { lang: Locale };
 }
 
-// Updated generateMetadata function with error handling
-export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
-  const { lang } = params || {}; // Check if params is defined
-  // Handle case where lang is not provided
-  if (!lang) {
-    console.warn("Lang parameter not found in generateMetadata, using default language.");
-    return {
-      title: "Contact Us - Digital Emporium",
-      description: "We're here to help and answer any question you might have. We look forward to hearing from you!",
-    };
-  }
+// Updated generateMetadata function with more robust lang handling
+export async function generateMetadata(props: ContactPageProps): Promise<Metadata> {
+  // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
+  const params = props?.params;
+  const lang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+    ? params.lang
+    : i18n.defaultLocale;
+
   console.log(`[generateMetadata] Attempting to get site content for lang: ${lang}`);
   const siteContent = await getSiteContentAction();
   console.log(`[generateMetadata] siteContent received:`, JSON.stringify(siteContent, null, 2));
@@ -44,24 +41,13 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
   };
 }
 
-// Updated ContactPage component with error handling
-export default async function ContactPage({ params }: ContactPageProps) {
-  const { lang } = params || {}; // Check if params is defined
-
-  // Handle case where lang is not provided
-  if (!lang) {
-    console.warn("Lang parameter not found in ContactPage, using default language.");
-    return (
-      <div className="container mx-auto px-4 py-12 md:py-16">
-        <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 tracking-tight">
-          Contact Us
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          An error occurred while loading the contact page. Please try again later.
-        </p>
-      </div>
-    );
-  }
+// Updated ContactPage component with more robust lang handling
+export default async function ContactPage(props: ContactPageProps) {
+  // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
+  const params = props?.params;
+  const lang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+    ? params.lang
+    : i18n.defaultLocale;
 
   console.log(`[ContactPage] Rendering for lang: ${lang}`);
   const dictionary = await getDictionary(lang);
@@ -127,7 +113,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
         <h2 className="text-2xl md:text-3xl font-semibold text-primary mb-4">
           {contact.ctaHeading?.[lang] || "Ready to Start?"}
         </h2>
-        <p className="text-muted-foreground max-w-xl mx-auto mb-8">
+        <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
           {contact.ctaDescription?.[lang] || "Reach out to discuss your project and get a personalized quote."}
         </p>
         <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-3 text-lg">
