@@ -8,26 +8,23 @@ import { Providers } from '../providers'; // Adjusted path for providers
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from 'next-themes';
 import type { Locale } from '@/lib/i18n/i18n-config';
-import { i18n } from '@/lib/i18n/i18n-config';
+import { i18n } from '@/lib/i18n/i18n-config'; // Importa i18n para acceder a defaultLocale y locales
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'],});
+const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'],});
 
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }))
 }
 
 export async function generateMetadata({ params }: { params: { lang: Locale } }): Promise<Metadata> {
-  const dictionary = await getDictionary(params.lang);
+  // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
+  const safeLang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+    ? params.lang
+    : i18n.defaultLocale;
+
+  const dictionary = await getDictionary(safeLang);
   return {
     title: dictionary.siteTitle as string || 'Digital Emporium',
     description: dictionary.siteDescription as string || 'Your one-stop solution for cutting-edge digital services.',
@@ -46,29 +43,21 @@ type RootLayoutProps = {
   params: { lang: Locale };
 };
 
-export default function RootLayout({
-  children,
-  params,
-}: RootLayoutProps) {
-  // Fetch the dictionary for the current locale
-  // Note: getDictionary is already async, so this works well with async components
-  // However, we are not explicitly passing it down as a prop here,
-  // assuming pages/components use getDictionary directly with params.lang
-  return (
+export default function RootLayout({ children, params,}: RootLayoutProps) {
+  // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
+  const safeLang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+    ? params.lang
+    : i18n.defaultLocale;
 
-    <html lang={params.lang} suppressHydrationWarning>
+  return (
+    <html lang={safeLang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange >
           <AuthProvider>
             <Providers>
-              <PublicHeader lang={params.lang} />
+              <PublicHeader lang={safeLang} />
               <main className="flex-grow">{children}</main>
-              <PublicFooter lang={params.lang} />
+              <PublicFooter lang={safeLang} />
               <Toaster />
             </Providers>
           </AuthProvider>
