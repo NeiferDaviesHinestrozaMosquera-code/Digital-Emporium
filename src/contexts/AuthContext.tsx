@@ -1,12 +1,10 @@
-
 "use client";
-
 import type { User } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import type { ReactNode } from 'react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '@/lib/firebase/config';
-import { Loader2 } from 'lucide-react';
+// No es necesario importar Loader2 aquí, ya que el AuthProvider no lo renderizará directamente.
 
 interface AuthContextType {
   user: User | null;
@@ -30,14 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
+  // Siempre renderiza el proveedor, permitiendo que los componentes hijos manejen el estado de carga.
   return (
     <AuthContext.Provider value={{ user, loading }}>
       {children}
