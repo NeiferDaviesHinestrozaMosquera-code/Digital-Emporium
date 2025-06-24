@@ -1,19 +1,32 @@
-
 import type { Project } from '@/lib/placeholder-data';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Github, Layers } from 'lucide-react'; // Assuming Layers as a default icon
+import { ExternalLink, Github, Layers } from 'lucide-react';
 import { iconMap } from '@/lib/placeholder-data';
 
 interface ProjectCardProps {
   project: Project;
+  lang: 'en' | 'es' | 'fr'; // Propiedad de idioma añadida
 }
 
-export default function ProjectCard({ project }: ProjectCardProps) {
-  const IconComponent = iconMap[project.iconName] || Layers;
+export default function ProjectCard({ project, lang }: ProjectCardProps) {
+  // Manejo seguro de valores internacionalizados
+  const title = project.title?.[lang] || project.title?.en || "Project Title";
+  const shortDescription = project.shortDescription?.[lang] || 
+                          project.shortDescription?.en || 
+                          "Short project description";
+  const description = project.description?.[lang] || 
+                     project.description?.en || 
+                     "Project description";
+  const clientName = project.clientName?.[lang] || project.clientName?.en;
+  const category = project.category?.[lang] || project.category?.en || "Uncategorized";
+
+  const IconComponent = project.iconName && iconMap[project.iconName] 
+    ? iconMap[project.iconName] 
+    : Layers;
 
   return (
     <Card className="group flex flex-col h-full shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden hover:-translate-y-1">
@@ -22,59 +35,92 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <div className="relative w-full h-52 rounded-t-lg overflow-hidden">
             <Image 
               src={project.image} 
-              alt={project.title} 
+              alt={title} 
               fill={true}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              style={{objectFit: 'cover'}}
+              style={{ objectFit: 'cover' }}
               className="transition-transform duration-300 ease-in-out group-hover:scale-105"
-              data-ai-hint={project.dataAiHint}
             />
           </div>
         )}
-         <div className="p-6">
+        <div className="p-6">
           <div className="flex items-center gap-3 mb-2">
             <IconComponent className="w-7 h-7 text-primary flex-shrink-0" />
-            <CardTitle className="text-xl font-semibold text-primary">{project.title}</CardTitle>
+            <CardTitle className="text-xl font-semibold text-primary">
+              {title}
+            </CardTitle>
           </div>
-          <CardDescription className="text-sm text-foreground/75 min-h-[3rem] line-clamp-2 mb-2">{project.shortDescription}</CardDescription>
-          {project.clientName && <p className="text-xs text-muted-foreground mb-1">Client: {project.clientName}</p>}
-          <p className="text-xs text-muted-foreground">Category: {project.category}</p>
+          <CardDescription className="text-sm text-foreground/75 min-h-[3rem] line-clamp-2 mb-2">
+            {shortDescription}
+          </CardDescription>
+          {clientName && <p className="text-xs text-muted-foreground mb-1">Client: {clientName}</p>}
+          <p className="text-xs text-muted-foreground">Category: {category}</p>
         </div>
       </CardHeader>
+      
       <CardContent className="px-6 pb-6 pt-0 flex-grow space-y-3">
-        <p className="text-sm text-muted-foreground line-clamp-4">{project.description}</p>
-        <div>
-            <h4 className="text-xs font-semibold mb-1.5 text-foreground/90">Key Technologies:</h4>
+        <p className="text-sm text-muted-foreground line-clamp-4">
+          {description}
+        </p>
+        
+        {project.technologies && project.technologies.length > 0 && (
+          <div>
+            <h4 className="text-xs font-semibold mb-1.5 text-foreground/90">
+              Key Technologies:
+            </h4>
             <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech) => (
-                <Badge key={tech} variant="secondary" className="text-xs bg-secondary/70 text-secondary-foreground">
-                    {tech}
+              {project.technologies.map((tech) => (
+                <Badge 
+                  key={tech} 
+                  variant="secondary" 
+                  className="text-xs bg-secondary/70 text-secondary-foreground"
+                >
+                  {tech}
                 </Badge>
-                ))}
+              ))}
             </div>
-        </div>
+          </div>
+        )}
       </CardContent>
+      
       <CardFooter className="px-6 pb-6 pt-4 border-t flex flex-wrap justify-start gap-3">
         {project.liveLink && (
-          <Button asChild variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Link href={project.liveLink} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="mr-2 h-4 w-4" /> Live Demo
+          <Button 
+            asChild 
+            variant="default" 
+            size="sm" 
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <Link 
+              href={project.liveLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" /> 
+              Live Demo
             </Link>
           </Button>
         )}
+        
         {project.repoLink && (
           <Button asChild variant="outline" size="sm">
-            <Link href={project.repoLink} target="_blank" rel="noopener noreferrer">
-              <Github className="mr-2 h-4 w-4" /> View Code
+            <Link 
+              href={project.repoLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <Github className="mr-2 h-4 w-4" /> 
+              View Code
             </Link>
           </Button>
         )}
+        
         {!project.liveLink && !project.repoLink && (
-            <p className="text-xs text-muted-foreground italic">No public links available for this project.</p>
+          <p className="text-xs text-muted-foreground italic">
+            No public links available for this project.
+          </p>
         )}
       </CardFooter>
     </Card>
   );
 }
-
-    
