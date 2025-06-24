@@ -10,9 +10,9 @@ import { ref, get, child, limitToFirst, query as firebaseQuery } from "firebase/
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 import { i18n, type Locale } from '@/lib/i18n/i18n-config'; // Importa i18n para acceder a defaultLocale y locales
 
-export async function generateMetadata({ params }: { params: { lang: Locale } }): Promise<Metadata> {
+export async function generateMetadata({ params = {} }: { params?: { lang?: Locale } }): Promise<Metadata> {
   // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
-  const safeLang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+  const safeLang: Locale = (params.lang && i18n.locales.includes(params.lang as Locale))
     ? params.lang
     : i18n.defaultLocale;
 
@@ -51,9 +51,9 @@ async function getHomePageData(): Promise<{ services: Service[], testimonials: T
 }
 
 
-export default async function HomePage({ params }: { params: { lang: Locale } }) {
+export default async function HomePage({ params = {} }: { params?: { lang?: Locale } }) {
   // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
-  const safeLang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+  const safeLang: Locale = (params.lang && i18n.locales.includes(params.lang as Locale))
     ? params.lang
     : i18n.defaultLocale;
 
