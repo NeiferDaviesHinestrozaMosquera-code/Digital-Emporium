@@ -11,14 +11,13 @@ import { defaultSiteContent } from '@/lib/placeholder-data';
 
 // Props interface for the page component
 interface ContactPageProps {
-  params: { lang: Locale };
+  params?: { lang?: Locale }; // Hacemos params y lang opcionales aquí
 }
 
 // Updated generateMetadata function with more robust lang handling
-export async function generateMetadata(props: ContactPageProps): Promise<Metadata> {
+export async function generateMetadata({ params = {} }: ContactPageProps): Promise<Metadata> {
   // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
-  const params = props?.params;
-  const lang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+  const lang: Locale = (params.lang && i18n.locales.includes(params.lang as Locale))
     ? params.lang
     : i18n.defaultLocale;
 
@@ -42,10 +41,9 @@ export async function generateMetadata(props: ContactPageProps): Promise<Metadat
 }
 
 // Updated ContactPage component with more robust lang handling
-export default async function ContactPage(props: ContactPageProps) {
+export default async function ContactPage({ params = {} }: ContactPageProps) {
   // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
-  const params = props?.params;
-  const lang: Locale = (params && params.lang && i18n.locales.includes(params.lang as Locale))
+  const lang: Locale = (params.lang && i18n.locales.includes(params.lang as Locale))
     ? params.lang
     : i18n.defaultLocale;
 
