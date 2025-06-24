@@ -8,16 +8,26 @@ import type { Metadata } from 'next';
 import { db } from "@/lib/firebase/config";
 import { ref, get, child, limitToFirst, query as firebaseQuery } from "firebase/database";
 import { getDictionary } from '@/lib/i18n/get-dictionary';
-import { i18n, type Locale } from '@/lib/i18n/i18n-config'; // Importa i18n para acceder a defaultLocale y locales
+import { i18n, type Locale } from '@/lib/i18n/i18n-config';
 
-export async function generateMetadata(props: { params?: { lang?: Locale } } = {}): Promise<Metadata> {
-  const params = props.params || {};
-  // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
-  const safeLang: Locale = (params.lang && i18n.locales.includes(params.lang as Locale))
-    ? params.lang
+// Props interface for the page component
+interface HomePageProps {
+  params: { lang: Locale };
+}
+
+// Generate static params for all supported locales
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({ lang: locale }));
+}
+
+export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
+  // Ensure lang is valid or use default
+  const safeLang: Locale = (params?.lang && i18n.locales.includes(params.lang)) 
+    ? params.lang 
     : i18n.defaultLocale;
 
   const dictionary = await getDictionary(safeLang);
+
   return {
     title: dictionary.heroTitle as string || 'Digital Emporium - Innovative Digital Solutions',
     description: dictionary.heroSubtitle as string || 'Digital Emporium offers web and app development, AI bots, and custom agent creation to elevate your business.',
@@ -30,20 +40,28 @@ async function getHomePageData(): Promise<{ services: Service[], testimonials: T
     
     const servicesQueryInstance = firebaseQuery(child(dbRef, 'services'), limitToFirst(3));
     const servicesSnapshot = await get(servicesQueryInstance);
+    
     let services: Service[] = [];
     if (servicesSnapshot.exists()) {
       const servicesObject = servicesSnapshot.val();
-      services = Object.keys(servicesObject).map(key => ({ id: key, ...servicesObject[key] }));
+      services = Object.keys(servicesObject).map(key => ({
+        id: key,
+        ...servicesObject[key]
+      }));
     }
 
     const testimonialsQueryInstance = firebaseQuery(child(dbRef, 'testimonials'), limitToFirst(3));
     const testimonialsSnapshot = await get(testimonialsQueryInstance);
+    
     let testimonials: Testimonial[] = [];
     if (testimonialsSnapshot.exists()) {
       const testimonialsObject = testimonialsSnapshot.val();
-      testimonials = Object.keys(testimonialsObject).map(key => ({ id: key, ...testimonialsObject[key] }));
+      testimonials = Object.keys(testimonialsObject).map(key => ({
+        id: key,
+        ...testimonialsObject[key]
+      }));
     }
-    
+
     return { services: services as Service[], testimonials: testimonials as Testimonial[] };
   } catch (error) {
     console.error("Error fetching homepage data from Firebase DB:", error);
@@ -51,12 +69,10 @@ async function getHomePageData(): Promise<{ services: Service[], testimonials: T
   }
 }
 
-
-export default async function HomePage(props: { params?: { lang?: Locale } } = {}) {
-  const params = props.params || {};
-  // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
-  const safeLang: Locale = (params.lang && i18n.locales.includes(params.lang as Locale))
-    ? params.lang
+export default async function HomePage({ params }: HomePageProps) {
+  // Ensure lang is valid or use default
+  const safeLang: Locale = (params?.lang && i18n.locales.includes(params.lang)) 
+    ? params.lang 
     : i18n.defaultLocale;
 
   const { services, testimonials } = await getHomePageData();
@@ -100,18 +116,19 @@ export default async function HomePage(props: { params?: { lang?: Locale } } = {
           </p>
           {services.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services.map((service, index) => ( 
+              {services.map((service, index) => (
                 <div key={service.id} className={`animate-in fade-in slide-in-from-bottom-10 duration-500`} style={{ animationDelay: `${index * 150 + 200}ms` }}>
                   <ServiceCard service={service} lang={safeLang} />
                 </div>
               ))}
             </div>
-            ) : <p className="text-center text-muted-foreground">No services to display currently.</p>
+          ) : <p className="text-center text-muted-foreground">No services to display currently.</p>
           }
           <div className="text-center mt-12 animate-in fade-in zoom-in delay-500 duration-500">
             <Button asChild variant="link" className="text-accent hover:text-accent/80 text-lg">
               <Link href={`/${safeLang}/services`}>
-                {dictionary.viewAllServices as string} <ArrowRight className="ml-2 h-5 w-5" />
+                {dictionary.viewAllServices as string}
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
           </div>
@@ -133,7 +150,7 @@ export default async function HomePage(props: { params?: { lang?: Locale } } = {
                 </div>
               ))}
             </div>
-             ) : <p className="text-center text-muted-foreground">No testimonials to display currently.</p>
+          ) : <p className="text-center text-muted-foreground">No testimonials to display currently.</p>
           }
         </div>
       </section>
