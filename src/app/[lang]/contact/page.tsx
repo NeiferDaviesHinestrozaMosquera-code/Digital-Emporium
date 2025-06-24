@@ -17,7 +17,6 @@ interface ContactPageProps {
 // Updated generateMetadata function with error handling
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
   const { lang } = params || {}; // Check if params is defined
-
   // Handle case where lang is not provided
   if (!lang) {
     console.warn("Lang parameter not found in generateMetadata, using default language.");
@@ -26,7 +25,6 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
       description: "We're here to help and answer any question you might have. We look forward to hearing from you!",
     };
   }
-
   console.log(`[generateMetadata] Attempting to get site content for lang: ${lang}`);
   const siteContent = await getSiteContentAction();
   console.log(`[generateMetadata] siteContent received:`, JSON.stringify(siteContent, null, 2));
@@ -77,13 +75,13 @@ export default async function ContactPage({ params }: ContactPageProps) {
     {
       icon: Mail,
       title: contact.emailLabel?.[lang] || "Email Us",
-      value: contact.emailValue || "",
+      value: contact.emailValue || "", // CORREGIDO: Eliminado ?.[lang]
       href: `mailto:${contact.emailValue || ""}`,
     },
     {
       icon: Phone,
       title: contact.phoneLabel?.[lang] || "Call Us",
-      value: contact.phoneValue || "",
+      value: contact.phoneValue || "", // CORREGIDO: Eliminado ?.[lang]
       href: `tel:${(contact.phoneValue || "").replace(/\s/g, '')}`,
     },
     {
@@ -104,7 +102,6 @@ export default async function ContactPage({ params }: ContactPageProps) {
           {contact.subHeading?.[lang] || "We're here to help and answer any question you might have. We look forward to hearing from you!"}
         </p>
       </header>
-
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 md:mb-16">
         {contactMethods.map((method) => (
           <Card key={method.title} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -126,7 +123,6 @@ export default async function ContactPage({ params }: ContactPageProps) {
           </Card>
         ))}
       </div>
-
       <section className="text-center py-10 bg-secondary/30 rounded-lg shadow">
         <h2 className="text-2xl md:text-3xl font-semibold text-primary mb-4">
           {contact.ctaHeading?.[lang] || "Ready to Start?"}
@@ -136,8 +132,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
         </p>
         <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-3 text-lg">
           <Link href={`/${lang}/quote-request`}>
-            <Send className="mr-2 h-5 w-5" />
-            {dictionary.requestAQuoteNow as string}
+            <Send className="mr-2 h-5 w-5" /> {dictionary.requestAQuoteNow as string}
           </Link>
         </Button>
       </section>
