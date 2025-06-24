@@ -15,7 +15,10 @@ interface ContactPageProps {
 }
 
 // Updated generateMetadata function with more robust lang handling
-export async function generateMetadata({ params = {} }: ContactPageProps): Promise<Metadata> {
+export async function generateMetadata(props: ContactPageProps = {}): Promise<Metadata> {
+  // Asegura que 'params' siempre sea un objeto, incluso si 'props' es undefined/null
+  const params = props.params || {};
+  
   // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
   const lang: Locale = (params.lang && i18n.locales.includes(params.lang as Locale))
     ? params.lang
@@ -41,7 +44,10 @@ export async function generateMetadata({ params = {} }: ContactPageProps): Promi
 }
 
 // Updated ContactPage component with more robust lang handling
-export default async function ContactPage({ params = {} }: ContactPageProps) {
+export default async function ContactPage(props: ContactPageProps = {}) {
+  // Asegura que 'params' siempre sea un objeto, incluso si 'props' es undefined/null
+  const params = props.params || {};
+
   // Asegura que 'lang' siempre sea un valor válido de Locale o el defaultLocale
   const lang: Locale = (params.lang && i18n.locales.includes(params.lang as Locale))
     ? params.lang
