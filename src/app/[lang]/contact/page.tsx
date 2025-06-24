@@ -6,18 +6,27 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getSiteContentAction } from '@/components/admin/actions';
 import { defaultSiteContent } from '@/lib/placeholder-data';
-import { getLocaleFromParams } from '@/lib/i18n/i18n-config';
+import { i18n } from '@/lib/i18n/i18n-config';
 
+// Función para obtener el idioma de forma segura
+function getSafeLang(langParam: any): 'en' | 'es' | 'fr' {
+  return i18n.locales.includes(langParam) 
+    ? langParam as 'en' | 'es' | 'fr'
+    : i18n.defaultLocale;
+}
+
+// Generar rutas estáticas
+export async function generateStaticParams() {
+  return i18n.locales.map(locale => ({ lang: locale }));
+}
+
+// Generar metadatos
 export async function generateMetadata({
   params
 }: {
-  params?: { lang?: string }
-} = {}): Promise<Metadata> {
-  // Manejo directo de params.lang con protección
-  const lang = params?.lang && ['en', 'es', 'fr'].includes(params.lang)
-    ? params.lang as 'en' | 'es' | 'fr'
-    : 'en';
-  
+  params: { lang: string }
+}): Promise<Metadata> {
+  const lang = getSafeLang(params?.lang);
   const siteContent = await getSiteContentAction();
   const contact = siteContent?.contactPage || defaultSiteContent.contactPage;
 
@@ -27,16 +36,13 @@ export async function generateMetadata({
   };
 }
 
+// Componente de página
 export default async function ContactPage({
   params
 }: {
-  params?: { lang?: string }
-} = {}) {
-  // Solución simplificada y robusta
-  const lang = params?.lang && ['en', 'es', 'fr'].includes(params.lang)
-    ? params.lang as 'en' | 'es' | 'fr'
-    : 'en';
-  
+  params: { lang: string }
+}) {
+  const lang = getSafeLang(params?.lang);
   const dictionary = await getDictionary(lang);
   const siteContent = await getSiteContentAction();
   const contact = siteContent?.contactPage || defaultSiteContent.contactPage;
