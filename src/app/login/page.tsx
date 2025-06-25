@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { Button } from '@/components/ui/button';
@@ -12,47 +12,52 @@ import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/i18n-config';
 
-export default function LoginPage({ params }: { params: { lang: Locale } }) {
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const params = useParams();
   
-  // Usamos el idioma de los parámetros directamente
-  const lang = params.lang || 'en';
-
-  const getRedirectUrl = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const callbackUrl = urlParams.get('redirect');
-    
-    if (callbackUrl) {
-      const hasLocale = /^\/(en|es|fr)/.test(callbackUrl);
-      return hasLocale ? callbackUrl : `/${lang}${callbackUrl}`;
-    }
-    return `/${lang}/admin`;
-  };
+  // Obtenemos el idioma de forma segura usando useParams
+  const lang = (params?.lang as Locale) || 'en';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: 'Login Successful',
         description: `Redirecting...`,
       });
-      router.push(getRedirectUrl());
+      
+      // Obtenemos la URL de redirección de forma segura
+      const urlParams = new URLSearchParams(window.location.search);
+      const callbackUrl = urlParams.get('redirect');
+      const redirectUrl = callbackUrl 
+        ? callbackUrl.startsWith('/') 
+          ? callbackUrl 
+          : `/${lang}${callbackUrl}`
+        : `/${lang}/admin`;
+      
+      router.push(redirectUrl);
     } catch (error: any) {
       console.error("Login attempt failed. Firebase error:", error);
       let description = 'Please check your credentials and try again.';
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+      
+      if (error.code === 'auth/invalid-credential' || 
+          error.code === 'auth/user-not-found' || 
+          error.code === 'auth/wrong-password') {
         description = 'Invalid email or password. Please verify your credentials.';
       } else if (error.code === 'auth/invalid-api-key') {
         description = 'Firebase API Key is invalid. Please check configuration.';
       } else if (error.message) {
         description = error.message;
       }
+      
       toast({
         title: 'Login Failed',
         description: description,
@@ -66,11 +71,12 @@ export default function LoginPage({ params }: { params: { lang: Locale } }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
       <div className="absolute top-0 left-0 p-6">
-        <Link href={`/${lang}/`} className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors" >
+        <Link href={`/${lang}/`} className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors">
           <CodeXml className="h-7 w-7" />
           <span className="font-semibold text-xl">Digital Emporium</span>
         </Link>
       </div>
+      
       <Card className="w-full max-w-md shadow-2xl border-t-4 border-primary">
         <CardHeader className="text-center space-y-2">
           <ShieldAlert className="mx-auto h-12 w-12 text-primary" />
@@ -80,6 +86,7 @@ export default function LoginPage({ params }: { params: { lang: Locale } }) {
             Please enter your credentials below.
           </CardDescription>
         </CardHeader>
+        
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-6 py-6">
             <div className="space-y-2">
@@ -96,6 +103,7 @@ export default function LoginPage({ params }: { params: { lang: Locale } }) {
                 className="text-base py-3 px-4 rounded-md"
               />
             </div>
+            
             <div className="space-y-2">
               <Label htmlFor="password" className="text-base font-medium">
                 Password
@@ -111,6 +119,7 @@ export default function LoginPage({ params }: { params: { lang: Locale } }) {
               />
             </div>
           </CardContent>
+          
           <CardFooter className="flex flex-col gap-4 pt-2">
             <Button
               type="submit"
@@ -124,12 +133,14 @@ export default function LoginPage({ params }: { params: { lang: Locale } }) {
               )}
               Secure Login
             </Button>
+            
             <p className="text-xs text-muted-foreground text-center">
               Forgot your password? Contact support.
             </p>
           </CardFooter>
         </form>
       </Card>
+      
       <p className="mt-8 text-sm text-muted-foreground max-w-md text-center">
         This area is restricted. Only authorized personnel should attempt to log in. All activities may be monitored.
       </p>
