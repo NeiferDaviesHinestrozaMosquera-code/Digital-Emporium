@@ -1,15 +1,13 @@
 "use client";
-import type { User } from 'firebase/auth';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import type { ReactNode } from 'react';
-import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '@/lib/firebase/config';
-// No es necesario importar Loader2 aquí, ya que el AuthProvider no lo renderizará directamente.
+import type { User } from 'firebase/auth';
+import type { ReactNode } from 'react';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  // Add login/logout functions here if preferred over direct Firebase calls
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -43,3 +41,6 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+// Añade exportación por defecto para el provider
+export default AuthProvider;
