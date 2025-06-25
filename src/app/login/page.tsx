@@ -1,8 +1,7 @@
-'use client';
-
-import { useState, useEffect, Suspense } from 'react';
+"use client";
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signInWithEmailAndPassword, type User } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +12,7 @@ import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/i18n-config';
 
-// The actual form component that uses the hook
+// Componente principal del formulario de login
 function LoginForm({ lang }: { lang: Locale }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,7 +35,6 @@ function LoginForm({ lang }: { lang: Locale }) {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({
@@ -46,19 +44,14 @@ function LoginForm({ lang }: { lang: Locale }) {
       router.push(redirectUrl);
     } catch (error: any) {
       console.error("Login attempt failed. Firebase error:", error);
-      
       let description = 'Please check your credentials and try again.';
-      
-      if (error.code === 'auth/invalid-credential' || 
-          error.code === 'auth/user-not-found' || 
-          error.code === 'auth/wrong-password') {
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         description = 'Invalid email or password. Please verify your credentials.';
       } else if (error.code === 'auth/invalid-api-key') {
         description = 'Firebase API Key is invalid. Please check configuration.';
       } else if (error.message) {
         description = error.message;
       }
-      
       toast({
         title: 'Login Failed',
         description: description,
@@ -76,26 +69,20 @@ function LoginForm({ lang }: { lang: Locale }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
       <div className="absolute top-0 left-0 p-6">
-        <Link 
-          href={`/${lang}/`} 
-          className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-        >
+        <Link href={`/${lang}/`} className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors" >
           <CodeXml className="h-7 w-7" />
           <span className="font-semibold text-xl">Digital Emporium</span>
         </Link>
       </div>
-
       <Card className="w-full max-w-md shadow-2xl border-t-4 border-primary">
         <CardHeader className="text-center space-y-2">
           <ShieldAlert className="mx-auto h-12 w-12 text-primary" />
           <CardTitle className="text-3xl font-bold text-primary">Admin Portal</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Access the management dashboard.
-            <br />
+            Access the management dashboard. <br />
             Please enter your credentials below.
           </CardDescription>
         </CardHeader>
-
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-6 py-6">
             <div className="space-y-2">
@@ -112,7 +99,6 @@ function LoginForm({ lang }: { lang: Locale }) {
                 className="text-base py-3 px-4 rounded-md"
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password" className="text-base font-medium">
                 Password
@@ -128,7 +114,6 @@ function LoginForm({ lang }: { lang: Locale }) {
               />
             </div>
           </CardContent>
-
           <CardFooter className="flex flex-col gap-4 pt-2">
             <Button
               type="submit"
@@ -142,23 +127,20 @@ function LoginForm({ lang }: { lang: Locale }) {
               )}
               Secure Login
             </Button>
-
             <p className="text-xs text-muted-foreground text-center">
               Forgot your password? Contact support.
             </p>
           </CardFooter>
         </form>
       </Card>
-
       <p className="mt-8 text-sm text-muted-foreground max-w-md text-center">
-        This area is restricted. Only authorized personnel should attempt to log in. 
-        All activities may be monitored.
+        This area is restricted. Only authorized personnel should attempt to log in. All activities may be monitored.
       </p>
     </div>
   );
 }
 
-// Loading component
+// Componente de carga
 function LoadingSpinner() {
   return (
     <div className="flex h-screen items-center justify-center bg-background">
@@ -167,52 +149,13 @@ function LoadingSpinner() {
   );
 }
 
-// The page component that receives params as props from Next.js
-interface LoginPageProps {
-  params: Promise<{ lang: Locale }> | { lang: Locale };
-}
-
-export default function LoginPage({ params }: LoginPageProps) {
+// Componente principal de la página
+export default function LoginPage({ params }: { params: { lang: Locale } }) {
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <LoginPageWrapper params={params} />
+      <LoginForm lang={params.lang} />
     </Suspense>
   );
 }
 
-// Wrapper component to handle async params
-function LoginPageWrapper({ params }: LoginPageProps) {
-  const [lang, setLang] = useState<Locale | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const resolveParams = async () => {
-      try {
-        const resolvedParams = await Promise.resolve(params);
-        
-        if (resolvedParams && resolvedParams.lang) {
-          setLang(resolvedParams.lang);
-        } else {
-          // Fallback to English if params are missing
-          setLang('en');
-        }
-      } catch (error) {
-        console.error('Error resolving params:', error);
-        setLang('en'); // Fallback
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    resolveParams();
-  }, [params]);
-
-  if (isLoading || !lang) {
-    return <LoadingSpinner />;
-  }
-
-  return <LoginForm lang={lang} />;
-}
-
-// For dynamic rendering
 export const dynamic = 'force-dynamic';
