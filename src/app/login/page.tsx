@@ -1,6 +1,6 @@
 "use client";
-import { useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { Button } from '@/components/ui/button';
@@ -12,16 +12,48 @@ import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/i18n-config';
 
-export default function LoginPage() {
+interface LoginPageProps {
+  params?: {
+    lang?: Locale;
+  };
+}
+
+export default function LoginPage({ params: propsParams }: LoginPageProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const params = useParams();
+  const hookParams = useParams();
+  const pathname = usePathname();
   
-  // Obtenemos el idioma de forma segura usando useParams
-  const lang = (params?.lang as Locale) || 'en';
+  // Extraer idioma del pathname como fallback más confiable
+  const getLangFromPath = (path: string): Locale => {
+    const segments = path.split('/').filter(Boolean);
+    const possibleLang = segments[0];
+    // Aquí deberías validar contra tus idiomas soportados
+    return (possibleLang === 'en' || possibleLang === 'es' ? possibleLang : 'en') as Locale;
+  };
+  
+  // Estrategia de múltiples fallbacks para obtener el idioma
+  const lang = (() => {
+    // 1. Intentar desde useParams (funciona en cliente)
+    if (hookParams?.lang) return hookParams.lang as Locale;
+    
+    // 2. Intentar desde props (funciona en prerendering)
+    if (propsParams?.lang) return propsParams.lang as Locale;
+    
+    // 3. Extraer del pathname (más confiable)
+    if (pathname) return getLangFromPath(pathname);
+    
+    // 4. Fallback por defecto
+    return 'en' as Locale;
+  })();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,14 +66,19 @@ export default function LoginPage() {
         description: `Redirecting...`,
       });
       
-      // Obtenemos la URL de redirección de forma segura
-      const urlParams = new URLSearchParams(window.location.search);
-      const callbackUrl = urlParams.get('redirect');
-      const redirectUrl = callbackUrl 
-        ? callbackUrl.startsWith('/') 
-          ? callbackUrl 
-          : `/${lang}${callbackUrl}`
-        : `/${lang}/admin`;
+      // Manejo seguro de window durante prerendering
+      let redirectUrl = `/${lang}/admin`;
+      
+      if (mounted && typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const callbackUrl = urlParams.get('redirect');
+        
+        if (callbackUrl) {
+          redirectUrl = callbackUrl.startsWith('/') 
+            ? callbackUrl 
+            : `/${lang}${callbackUrl}`;
+        }
+      }
       
       router.push(redirectUrl);
     } catch (error: any) {
@@ -148,4 +185,5 @@ export default function LoginPage() {
   );
 }
 
+// Forzar generación dinámica para evitar problemas de prerendering
 export const dynamic = 'force-dynamic';
