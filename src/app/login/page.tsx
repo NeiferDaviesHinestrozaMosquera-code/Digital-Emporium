@@ -1,6 +1,6 @@
 "use client";
-import { useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { Button } from '@/components/ui/button';
@@ -12,25 +12,26 @@ import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/i18n-config';
 
-// Componente principal del formulario de login
-function LoginForm({ lang }: { lang: Locale }) {
+export default function LoginPage({ params }: { params: { lang: Locale } }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const searchParams = useSearchParams();
+  
+  // Usamos el idioma de los parámetros directamente
+  const lang = params.lang || 'en';
 
   const getRedirectUrl = () => {
-    const callbackUrl = searchParams.get('redirect');
+    const urlParams = new URLSearchParams(window.location.search);
+    const callbackUrl = urlParams.get('redirect');
+    
     if (callbackUrl) {
       const hasLocale = /^\/(en|es|fr)/.test(callbackUrl);
       return hasLocale ? callbackUrl : `/${lang}${callbackUrl}`;
     }
     return `/${lang}/admin`;
   };
-
-  const redirectUrl = getRedirectUrl();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +42,7 @@ function LoginForm({ lang }: { lang: Locale }) {
         title: 'Login Successful',
         description: `Redirecting...`,
       });
-      router.push(redirectUrl);
+      router.push(getRedirectUrl());
     } catch (error: any) {
       console.error("Login attempt failed. Firebase error:", error);
       let description = 'Please check your credentials and try again.';
@@ -61,10 +62,6 @@ function LoginForm({ lang }: { lang: Locale }) {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    document.title = `Admin Login - Digital Emporium`;
-  }, []);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
@@ -137,24 +134,6 @@ function LoginForm({ lang }: { lang: Locale }) {
         This area is restricted. Only authorized personnel should attempt to log in. All activities may be monitored.
       </p>
     </div>
-  );
-}
-
-// Componente de carga
-function LoadingSpinner() {
-  return (
-    <div className="flex h-screen items-center justify-center bg-background">
-      <Loader2 className="h-12 w-12 animate-spin text-primary" />
-    </div>
-  );
-}
-
-// Componente principal de la página
-export default function LoginPage({ params }: { params: { lang: Locale } }) {
-  return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <LoginForm lang={params.lang} />
-    </Suspense>
   );
 }
 
