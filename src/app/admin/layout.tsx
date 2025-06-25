@@ -1,35 +1,21 @@
-
-"use client"; 
-
-import type { Metadata } from 'next';
+// src/app/admin/layout.tsx
+"use client";
 import AdminSidebar from '@/components/admin/AdminSidebar';
-import { useAuth } from '@/contexts/AuthContext';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext'; // Importa el hook
 
-// Metadata can still be defined for Server Components, but it's fine here too.
-// For client components, you'd typically set title via document.title in useEffect.
-// However, Next.js might handle this metadata object even in a client component layout.
-// export const metadata: Metadata = { // This might not be directly picked up if the whole file is client.
-// title: 'Admin Dashboard - Digital Emporium',
-// description: 'Manage services, testimonials, and client inquiries for Digital Emporium.',
-// };
-
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof document !== 'undefined') { 
-        document.title = 'Admin Dashboard - Digital Emporium';
+    if (typeof document !== 'undefined') {
+      document.title = 'Admin Dashboard - Digital Emporium';
     }
     if (!loading && !user) {
-      router.push('/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search)); // Redirect to login if not authenticated, preserving current path
+      router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
     }
   }, [user, loading, router]);
 
@@ -42,20 +28,18 @@ export default function AdminLayout({
   }
 
   if (!user) {
-    // This will show briefly before redirect or if redirect fails
     return (
-       <div className="flex h-screen items-center justify-center bg-background">
-         <p>Redireccionando al login...</p>
-         <Loader2 className="ml-2 h-6 w-6 animate-spin text-primary" />
+      <div className="flex h-screen items-center justify-center bg-background">
+        <p>Redireccionando al login...</p>
+        <Loader2 className="ml-2 h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
 
-  // If user is authenticated, render the admin layout
   return (
     <div className="flex h-screen bg-background">
       <AdminSidebar />
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto ml-64">
+      <main className="ml-64 flex-1 overflow-y-auto p-6 md:p-8">
         {children}
       </main>
     </div>
