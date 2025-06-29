@@ -1,4 +1,5 @@
-'use client';
+// src/app/[lang]/login/page.tsx
+
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithEmailAndPassword, type User } from 'firebase/auth';
@@ -11,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/i18n-config';
+import { i18n } from '@/lib/i18n/i18n-config'; // Asegúrate de importar i18n
 
 // The actual form component that uses the hook
 function LoginForm({ lang }: { lang: Locale }) {
@@ -79,9 +81,7 @@ function LoginForm({ lang }: { lang: Locale }) {
           <ShieldAlert className="mx-auto h-12 w-12 text-primary" />
           <CardTitle className="text-3xl font-bold text-primary">Admin Portal</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Access the management dashboard.
-            <br />
-            Please enter your credentials below.
+            Access the management dashboard. <br /> Please enter your credentials below.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleLogin}>
@@ -90,37 +90,17 @@ function LoginForm({ lang }: { lang: Locale }) {
               <Label htmlFor="email" className="text-base font-medium">
                 Email Address
               </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="text-base py-3 px-4 rounded-md"
-              />
+              <Input id="email" type="email" placeholder="admin@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="text-base py-3 px-4 rounded-md" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password" className="text-base font-medium">
                 Password
               </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="text-base py-3 px-4 rounded-md"
-              />
+              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="text-base py-3 px-4 rounded-md" />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4 pt-2">
-            <Button
-              type="submit"
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6 rounded-md font-semibold"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6 rounded-md font-semibold" disabled={isLoading} >
               {isLoading ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : (
@@ -161,12 +141,18 @@ export default function LoginPage({ params }: LoginPageProps) {
     // Fallback during build or if there are issues with params
     return <LoadingSpinner />;
   }
-
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <LoginForm lang={params.lang} />
     </Suspense>
   );
+}
+
+// Para generar estáticamente las rutas para cada idioma
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({
+    lang: locale,
+  }));
 }
 
 // For dynamic rendering if needed
