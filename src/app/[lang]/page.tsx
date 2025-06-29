@@ -15,10 +15,10 @@ interface HomePageProps {
   params: { lang: Locale };
 }
 
-// Generate static params for all supported locales
-export async function generateStaticParams() {
-  return i18n.locales.map((locale) => ({ lang: locale }));
-}
+// ELIMINA ESTA FUNCIÓN DE AQUÍ
+// export async function generateStaticParams() {
+//   return i18n.locales.map((locale) => ({ lang: locale }));
+// }
 
 export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
   // Ensure lang is valid or use default
