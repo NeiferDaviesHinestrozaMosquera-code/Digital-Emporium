@@ -15,10 +15,6 @@ function getSafeLang(langParam: any): 'en' | 'es' | 'fr' {
     : i18n.defaultLocale;
 }
 
-// Generar rutas estáticas
-export async function generateStaticParams() {
-  return i18n.locales.map(locale => ({ lang: locale }));
-}
 
 // Generar metadatos
 export async function generateMetadata({
