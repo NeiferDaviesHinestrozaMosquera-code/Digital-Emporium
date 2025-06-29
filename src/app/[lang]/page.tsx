@@ -1,3 +1,4 @@
+// src/app/[lang]/page.tsx
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { Service, Testimonial } from '@/lib/placeholder-data';
@@ -10,18 +11,11 @@ import { ref, get, child, limitToFirst, query as firebaseQuery } from "firebase/
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 import { i18n, type Locale } from '@/lib/i18n/i18n-config';
 
-// Props interface for the page component
 interface HomePageProps {
   params: { lang: Locale };
 }
 
-// ELIMINA ESTA FUNCIÓN DE AQUÍ
-// export async function generateStaticParams() {
-//   return i18n.locales.map((locale) => ({ lang: locale }));
-// }
-
 export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
-  // Ensure lang is valid or use default
   const safeLang: Locale = (params?.lang && i18n.locales.includes(params.lang)) 
     ? params.lang 
     : i18n.defaultLocale;
@@ -70,7 +64,6 @@ async function getHomePageData(): Promise<{ services: Service[], testimonials: T
 }
 
 export default async function HomePage({ params }: HomePageProps) {
-  // Ensure lang is valid or use default
   const safeLang: Locale = (params?.lang && i18n.locales.includes(params.lang)) 
     ? params.lang 
     : i18n.defaultLocale;
