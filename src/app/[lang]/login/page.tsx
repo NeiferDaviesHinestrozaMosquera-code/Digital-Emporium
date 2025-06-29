@@ -10,7 +10,19 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, LogIn, CodeXml, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
-import type { Locale } from '@/lib/i18n/i18n-config';
+import { i18n, type Locale } from '@/lib/i18n/i18n-config';
+
+// Función para obtener el idioma de forma segura
+function getSafeLang(langParam: any): 'en' | 'es' | 'fr' {
+  return i18n.locales.includes(langParam) 
+    ? langParam as 'en' | 'es' | 'fr'
+    : i18n.defaultLocale;
+}
+
+// Generar rutas estáticas para el prerenderizado
+export async function generateStaticParams() {
+  return i18n.locales.map(locale => ({ lang: locale }));
+}
 
 // The actual form component that uses the hook
 function LoginForm({ lang }: { lang: Locale }) {
@@ -24,7 +36,7 @@ function LoginForm({ lang }: { lang: Locale }) {
   const getRedirectUrl = () => {
     const callbackUrl = searchParams.get('redirect');
     if (callbackUrl) {
-      const hasLocale = /^\/(en|es|fr)/.test(callbackUrl);
+      const hasLocale = /^(en|es|fr)/.test(callbackUrl);
       return hasLocale ? callbackUrl : `/${lang}${callbackUrl}`;
     }
     return `/${lang}/admin`;
@@ -157,14 +169,12 @@ interface LoginPageProps {
 
 export default function LoginPage({ params }: LoginPageProps) {
   // Check if params and params.lang exist
-  if (!params || !params.lang) {
-    // Fallback during build or if there are issues with params
-    return <LoadingSpinner />;
-  }
+  // Fallback during build or if there are issues with params
+  const lang = getSafeLang(params?.lang);
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <LoginForm lang={params.lang} />
+      <LoginForm lang={lang} />
     </Suspense>
   );
 }
