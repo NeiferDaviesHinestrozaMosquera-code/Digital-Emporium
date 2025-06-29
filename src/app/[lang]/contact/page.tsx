@@ -10,19 +10,22 @@ import { i18n } from '@/lib/i18n/i18n-config';
 
 // Función para obtener el idioma de forma segura
 function getSafeLang(langParam: any): 'en' | 'es' | 'fr' {
-  return i18n.locales.includes(langParam) 
-    ? langParam as 'en' | 'es' | 'fr'
+  // Verificar si langParam existe y tiene la propiedad lang
+  const lang = langParam?.lang;
+  return i18n.locales.includes(lang) 
+    ? lang as 'en' | 'es' | 'fr'
     : i18n.defaultLocale;
 }
-
 
 // Generar metadatos
 export async function generateMetadata({
   params
 }: {
-  params: { lang: string }
+  params: Promise<{ lang: string }> | { lang: string }
 }): Promise<Metadata> {
-  const lang = getSafeLang(params?.lang);
+  // Manejar params como Promise o objeto directo
+  const resolvedParams = await Promise.resolve(params);
+  const lang = getSafeLang(resolvedParams);
   const siteContent = await getSiteContentAction();
   const contact = siteContent?.contactPage || defaultSiteContent.contactPage;
 
@@ -36,9 +39,11 @@ export async function generateMetadata({
 export default async function ContactPage({
   params
 }: {
-  params: { lang: string }
+  params: Promise<{ lang: string }> | { lang: string }
 }) {
-  const lang = getSafeLang(params?.lang);
+  // Manejar params como Promise o objeto directo
+  const resolvedParams = await Promise.resolve(params);
+  const lang = getSafeLang(resolvedParams);
   const dictionary = await getDictionary(lang);
   const siteContent = await getSiteContentAction();
   const contact = siteContent?.contactPage || defaultSiteContent.contactPage;
