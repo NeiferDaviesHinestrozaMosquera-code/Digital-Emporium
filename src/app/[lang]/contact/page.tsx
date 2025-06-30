@@ -10,32 +10,24 @@ import { i18n, type Locale } from '@/lib/i18n/i18n-config';
 
 // Función para validar idioma de forma segura
 function getSafeLang(lang: string | undefined): Locale {
-  return lang && i18n.locales.includes(lang as Locale) ? lang as Locale : i18n.defaultLocale;
+  if (!lang) return i18n.defaultLocale;
+  return i18n.locales.includes(lang as Locale) ? (lang as Locale) : i18n.defaultLocale;
 }
 
 interface ContactPageParams {
-  params: Promise<{ lang: string }> | { lang: string };
+  params: { lang: string };
 }
 
-// Helper function to safely resolve params
-async function resolveParams(params: Promise<{ lang: string }> | { lang: string }): Promise<{ lang: string }> {
-  try {
-    // Check if params is a Promise
-    if (params && typeof params === 'object' && 'then' in params) {
-      return await params;
-    }
-    // If it's already resolved, return it directly
-    return params || { lang: i18n.defaultLocale };
-  } catch (error) {
-    console.error('Error resolving params:', error);
-    return { lang: i18n.defaultLocale };
-  }
+// Add generateStaticParams to ensure proper static generation
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({
+    lang: locale,
+  }));
 }
 
 export async function generateMetadata({ params }: ContactPageParams): Promise<Metadata> {
   try {
-    const resolvedParams = await resolveParams(params);
-    const lang = getSafeLang(resolvedParams?.lang);
+    const lang = getSafeLang(params?.lang);
     
     const siteContent = await getSiteContentAction();
     const contact = siteContent?.contactPage || defaultSiteContent.contactPage;
@@ -55,8 +47,7 @@ export async function generateMetadata({ params }: ContactPageParams): Promise<M
 
 export default async function ContactPage({ params }: ContactPageParams) {
   try {
-    const resolvedParams = await resolveParams(params);
-    const lang = getSafeLang(resolvedParams?.lang);
+    const lang = getSafeLang(params?.lang);
     
     const [dictionary, siteContent] = await Promise.all([
       getDictionary(lang),
