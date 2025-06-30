@@ -27,6 +27,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: ContactPageParams): Promise<Metadata> {
   try {
+    const safeParams = params || { lang: i18n.defaultLocale };
     const lang = getSafeLang(params?.lang);
     
     const siteContent = await getSiteContentAction();
@@ -47,6 +48,7 @@ export async function generateMetadata({ params }: ContactPageParams): Promise<M
 
 export default async function ContactPage({ params }: ContactPageParams) {
   try {
+    const safeParams = params || { lang: i18n.defaultLocale };
     const lang = getSafeLang(params?.lang);
     
     const [dictionary, siteContent] = await Promise.all([
