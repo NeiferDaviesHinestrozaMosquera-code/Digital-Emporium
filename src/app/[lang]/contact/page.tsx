@@ -9,8 +9,8 @@ import { defaultSiteContent } from '@/lib/placeholder-data';
 import { i18n, type Locale } from '@/lib/i18n/i18n-config';
 
 // Función para validar idioma de forma segura
-function getSafeLang(lang: string | undefined): Locale {
-  if (!lang) return i18n.defaultLocale;
+function getSafeLang(lang: string | undefined): Locale { 
+  if (!lang) return i18n.defaultLocale; 
   return i18n.locales.includes(lang as Locale) ? (lang as Locale) : i18n.defaultLocale;
 }
 
@@ -51,29 +51,32 @@ export default async function ContactPage({ params }: ContactPageParams) {
     const safeParams = params || { lang: i18n.defaultLocale };
     const lang = getSafeLang(params?.lang);
     
-    const [dictionary, siteContent] = await Promise.all([
+     const [dictionary, siteContent] = await Promise.all([
       getDictionary(lang),
-      getSiteContentAction()
+      getSiteContentAction().catch(() => null) // Maneja errores en getSiteContentAction
     ]);
     
     const contact = siteContent?.contactPage || defaultSiteContent.contactPage;
+
+      const pageTitle = contact.pageTitle?.[lang] || dictionary.contact?.title || "Contact Us";
+    const subHeading = contact.subHeading?.[lang] || dictionary.contact?.subtitle || "Get in touch with us";
     
     const contactMethods = [
       {
         icon: Mail,
-        title: contact.emailLabel?.[lang] || "Email Us",
+         title: contact.emailLabel?.[lang] || dictionary.contact?.form?.email || "Email Us",
         value: contact.emailValue || "",
         href: `mailto:${contact.emailValue || ''}`
       },
       {
         icon: Phone,
-        title: contact.phoneLabel?.[lang] || "Call Us",
+        title: contact.phoneLabel?.[lang] || dictionary.contact?.form?.phone ||"Call Us",
         value: contact.phoneValue || "",
         href: `tel:${(contact.phoneValue || '').replace(/\s/g, '')}`
       },
       {
         icon: MapPin,
-        title: contact.addressLabel?.[lang] || "Visit Us",
+        title: contact.addressLabel?.[lang] || dictionary.contact?.form?.address || "Visit Us",
         value: contact.addressValue?.[lang] || "",
         href: "#"
       },
