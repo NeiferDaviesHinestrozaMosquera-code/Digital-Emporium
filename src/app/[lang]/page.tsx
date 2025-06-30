@@ -1,4 +1,3 @@
-// src/app/[lang]/page.tsx
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { Service, Testimonial } from '@/lib/placeholder-data';
@@ -12,12 +11,13 @@ import { getDictionary } from '@/lib/i18n/get-dictionary';
 import { i18n, type Locale } from '@/lib/i18n/i18n-config';
 
 interface HomePageProps {
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }> | { lang: Locale };
 }
 
 export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
-  const safeLang: Locale = (params?.lang && i18n.locales.includes(params.lang)) 
-    ? params.lang 
+  const resolvedParams = await params;
+  const safeLang: Locale = (resolvedParams?.lang && i18n.locales.includes(resolvedParams.lang)) 
+    ? resolvedParams.lang 
     : i18n.defaultLocale;
 
   const dictionary = await getDictionary(safeLang);
@@ -64,8 +64,9 @@ async function getHomePageData(): Promise<{ services: Service[], testimonials: T
 }
 
 export default async function HomePage({ params }: HomePageProps) {
-  const safeLang: Locale = (params?.lang && i18n.locales.includes(params.lang)) 
-    ? params.lang 
+  const resolvedParams = await params;
+  const safeLang: Locale = (resolvedParams?.lang && i18n.locales.includes(resolvedParams.lang)) 
+    ? resolvedParams.lang 
     : i18n.defaultLocale;
 
   const { services, testimonials } = await getHomePageData();
